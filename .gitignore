@@ -41,3 +41,8 @@ Thumbs.db
 
 *.csv
 *.parquet
+
+
+
+  git config --global user.email "johnmanful2002@hotmail.com"
+  git config --global user.name "jt-manful"
