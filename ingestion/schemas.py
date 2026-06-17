@@ -21,7 +21,6 @@ RAW_RESULTS_SCHEMA = [
     {"name": "points", "type": "FLOAT"},
     {"name": "status", "type": "STRING"},
     {"name": "time", "type": "STRING"},
-    {"name": "fastest_lap", "type": "BOOLEAN"},
     {"name": "loaded_at", "type": "TIMESTAMP"},
 ]
 
@@ -55,7 +54,7 @@ RAW_PIT_STOPS_SCHEMA = [
 
 RAW_WEATHER_SCHEMA = [
     {"name": "session_id", "type": "STRING"},
-    {"name": "timestamp", "type": "TIMESTAMP"},
+    {"name": "timestamp", "type": "STRING"},
     {"name": "air_temp", "type": "FLOAT"},
     {"name": "track_temp", "type": "FLOAT"},
     {"name": "humidity", "type": "FLOAT"},
