@@ -55,6 +55,26 @@ def check_already_loaded(session_id):
 def build_session_id(season, round_number, session_type):
     return f"{season}_{round_number}_{session_type}"
 
+def extract_pit_stops(laps, session_id, loaded_at):
+    pit_laps = laps[laps["PitInTime"].notna()].copy()
+    if pit_laps.empty:
+        print("No pit stop data found for this session.")
+        return None
+    pit_laps["session_id"] = session_id
+    pit_laps["loaded_at"] = loaded_at
+    pit_laps["pit_duration_seconds"] = (
+        pit_laps["PitOutTime"] - pit_laps["PitInTime"]
+    ).dt.total_seconds()
+    pit_df = pit_laps[[
+        "session_id", "DriverNumber", "Driver", "LapNumber",
+        "pit_duration_seconds", "loaded_at"
+    ]].copy()
+    pit_df.columns = [
+        "session_id", "driver_number", "abbreviation",
+        "lap_number", "pit_duration_seconds", "loaded_at"
+    ]
+    pit_df["stop_number"] = pit_df.groupby("driver_number").cumcount() + 1
+    return pit_df
 
 def ingest_session(season, round_number, session_type='R'):
     session_id = build_session_id(season, round_number, session_type)
@@ -167,6 +187,13 @@ def ingest_session(season, round_number, session_type='R'):
     }])
     upload_to_gcs(circuits_df, f"circuits/{session_id}.parquet")
     load_to_bigquery(circuits_df, "raw_circuits")
+
+    # PIT STOPS
+    pit_df = extract_pit_stops(session.laps.copy(), session_id, loaded_at)
+    if pit_df is not None:
+        upload_to_gcs(pit_df, f"pit_stops/{session_id}.parquet")
+        load_to_bigquery(pit_df, "raw_pit_stops")
+        print(f"Loaded {len(pit_df)} rows into raw_pit_stops")
 
     print(f"Session {session_id} ingested successfully.")
 
