@@ -19,6 +19,7 @@ Position_Change – Position gain/loss compared to previous lap
 RaceProgress – Fraction of race completed (0 → 1)
 PitStop – Whether the driver pitted on that lap (0/1)
 PitNextLap – Target variable: whether the driver will pit next lap (0/1)
+
 Each row can be used to model race strategy decisions, particularly pit stop timing.
 
 
@@ -43,5 +44,31 @@ FEATURES
 
 TARGET
 - pit_in_next_3_laps
+
+
+predict when theyll pit 
+
+
+f1-platform/
+├── data/
+│   ├── ingestion/          # FastF1 pollers, UDP listeners, Kafka producers
+│   ├── pipelines/          # Kafka consumers → DB writers, ETL/cleaning jobs
+│   └── schemas/             # shared SQL/Avro/Pydantic schemas (single source of truth)
+├── ml/
+│   ├── features/            # feature engineering, shared across all models
+│   ├── models/
+│   │   ├── pitstop_predictor/
+│   │   └── race_winner_predictor/   # added later, same pattern
+│   ├── training/             # training scripts, notebooks → scripts
+│   └── registry/             # saved model artifacts, versioning (MLflow or simple S3+json)
+├── services/
+│   ├── api/                  # FastAPI app — REST + WebSocket
+│   └── inference/            # model-serving layer, called by api
+├── frontend/
+│   └── dashboard/             # React/Tailwind app, modular widgets per project
+├── infra/
+│   ├── docker-compose.yml    # Kafka, TimescaleDB, API, frontend - local dev
+│   └── k8s/ (later)
+└── docs/
 
 

@@ -1,5 +1,8 @@
 services:
   api:
-    build: .
+    build: ./backend
     ports:
       - "8000:8000"
+
+    volumes:
+      - ./ml/models:/ml/models
