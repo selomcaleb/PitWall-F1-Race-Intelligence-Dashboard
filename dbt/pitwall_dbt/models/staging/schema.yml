@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: stg_sessions
+    description: "Cleaned session data with human-readable session type names"
+    columns:
+      - name: session_id
+        description: "Unique session identifier e.g. 2024_1_R"
+        tests:
+          - unique
+          - not_null
+      - name: season
+        description: "F1 season year"
+        tests:
+          - not_null
+      - name: session_type
+        description: "Raw session type code"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['R', 'Q']
+      - name: session_type_name
+        description: "Human readable session type"
+      - name: race_name
+        description: "Full race name e.g. 2024 Bahrain Grand Prix"

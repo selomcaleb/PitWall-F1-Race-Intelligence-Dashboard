@@ -1,0 +1,159 @@
+version: 2
+
+sources:
+  - name: pitwall_raw
+    database: f1-pitwall-project
+    schema: pitwall_raw
+    description: "Raw F1 data ingested from FastF1 — unmodified source data"
+    tables:
+      - name: raw_sessions
+        description: "One row per session (race or qualifying) per round per season"
+        columns:
+          - name: session_id
+            description: "Unique identifier for the session e.g. 2024_1_R"
+          - name: season
+            description: "F1 season year"
+          - name: round_number
+            description: "Round number within the season"
+          - name: country
+            description: "Country where the grand prix is held"
+          - name: location
+            description: "Circuit location city"
+          - name: circuit_key
+            description: "Official event name used as circuit identifier"
+          - name: session_type
+            description: "Session type — R for Race, Q for Qualifying"
+          - name: session_date
+            description: "Date the session took place"
+          - name: loaded_at
+            description: "Timestamp when the row was ingested into BigQuery"
+
+      - name: raw_results
+        description: "Race and qualifying results per driver per session"
+        columns:
+          - name: session_id
+            description: "Foreign key linking to raw_sessions"
+          - name: driver_number
+            description: "Driver car number"
+          - name: abbreviation
+            description: "Three letter driver abbreviation e.g. VER, HAM"
+          - name: full_name
+            description: "Driver full name"
+          - name: team_name
+            description: "Constructor team name"
+          - name: grid_position
+            description: "Starting grid position for the race"
+          - name: finish_position
+            description: "Final classified position"
+          - name: points
+            description: "Championship points scored"
+          - name: status
+            description: "Finish status e.g. Finished, DNF, DSQ"
+          - name: time
+            description: "Race finish time or gap to leader"
+          - name: loaded_at
+            description: "Timestamp when the row was ingested"
+
+      - name: raw_laps
+        description: "Lap-by-lap timing data for all drivers in a session"
+        columns:
+          - name: session_id
+            description: "Foreign key linking to raw_sessions"
+          - name: driver_number
+            description: "Driver car number"
+          - name: abbreviation
+            description: "Three letter driver abbreviation"
+          - name: lap_number
+            description: "Lap number within the session"
+          - name: lap_time_seconds
+            description: "Total lap time in seconds"
+          - name: sector_1_seconds
+            description: "Sector 1 time in seconds"
+          - name: sector_2_seconds
+            description: "Sector 2 time in seconds"
+          - name: sector_3_seconds
+            description: "Sector 3 time in seconds"
+          - name: compound
+            description: "Tyre compound used on this lap e.g. SOFT, MEDIUM, HARD"
+          - name: tyre_life
+            description: "Number of laps the tyre has been used"
+          - name: is_personal_best
+            description: "Whether this lap is the driver's personal best in the session"
+          - name: pit_in_time_seconds
+            description: "Time of pit entry in seconds from session start"
+          - name: pit_out_time_seconds
+            description: "Time of pit exit in seconds from session start"
+          - name: track_status
+            description: "Track status code during this lap e.g. 1 for clear, 4 for safety car"
+          - name: loaded_at
+            description: "Timestamp when the row was ingested"
+
+      - name: raw_pit_stops
+        description: "Pit stop events extracted from lap data for race sessions"
+        columns:
+          - name: session_id
+            description: "Foreign key linking to raw_sessions"
+          - name: driver_number
+            description: "Driver car number"
+          - name: abbreviation
+            description: "Three letter driver abbreviation"
+          - name: lap_number
+            description: "Lap on which the pit stop occurred"
+          - name: pit_duration_seconds
+            description: "Total pit stop duration in seconds"
+          - name: stop_number
+            description: "Sequential pit stop number for this driver in this race"
+          - name: loaded_at
+            description: "Timestamp when the row was ingested"
+
+      - name: raw_weather
+        description: "Weather readings taken approximately once per minute during a session"
+        columns:
+          - name: session_id
+            description: "Foreign key linking to raw_sessions"
+          - name: timestamp
+            description: "Time of the weather reading as a string"
+          - name: air_temp
+            description: "Ambient air temperature in degrees Celsius"
+          - name: track_temp
+            description: "Track surface temperature in degrees Celsius"
+          - name: humidity
+            description: "Relative humidity percentage"
+          - name: rainfall
+            description: "Boolean indicating whether it was raining"
+          - name: wind_speed
+            description: "Wind speed in metres per second"
+          - name: loaded_at
+            description: "Timestamp when the row was ingested"
+
+      - name: raw_drivers
+        description: "Driver information per session — one row per driver per session"
+        columns:
+          - name: driver_number
+            description: "Driver car number"
+          - name: abbreviation
+            description: "Three letter driver abbreviation"
+          - name: full_name
+            description: "Driver full name"
+          - name: team_name
+            description: "Constructor team name"
+          - name: nationality
+            description: "Driver country code"
+          - name: season
+            description: "Season the driver raced in"
+          - name: loaded_at
+            description: "Timestamp when the row was ingested"
+
+      - name: raw_circuits
+        description: "Circuit information extracted from session event data"
+        columns:
+          - name: circuit_key
+            description: "Official event name used as unique circuit identifier"
+          - name: circuit_name
+            description: "Circuit location name"
+          - name: country
+            description: "Country where the circuit is located"
+          - name: location
+            description: "City where the circuit is located"
+          - name: loaded_at
+            description: "Timestamp when the row was ingested"
