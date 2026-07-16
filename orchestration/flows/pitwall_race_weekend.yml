@@ -1,0 +1,48 @@
+id: pitwall_race_weekend
+namespace: pitwall
+
+description: |
+  Ingests the latest F1 race weekend data and rebuilds dbt models.
+  Triggered manually after each race weekend, or on a schedule.
+
+inputs:
+  - id: season
+    type: INT
+    defaults: 2025
+
+  - id: round
+    type: INT
+    defaults: 1
+
+tasks:
+  - id: ingest_race_weekend
+    type: io.kestra.plugin.scripts.python.Commands
+    taskRunner:
+      type: io.kestra.plugin.core.runner.Process
+    beforeCommands:
+      - pip install fastf1 pandas google-cloud-bigquery google-cloud-storage python-dotenv pyarrow
+    commands:
+      - python /app/ingestion/ingest_race_weekend.py --season {{ inputs.season }} --round {{ inputs.round }}
+    env:
+      GCP_PROJECT_ID: f1-pitwall-project
+      GCP_BUCKET_NAME: pitwall-raw-data
+      BQ_RAW_DATASET: pitwall_raw
+      BQ_MART_DATASET: pitwall_mart
+      GOOGLE_APPLICATION_CREDENTIALS: /app/service_account.json
+      FASTF1_CACHE_DIR: /tmp/fastf1_cache
+
+  - id: dbt_run
+    type: io.kestra.plugin.scripts.shell.Commands
+    taskRunner:
+      type: io.kestra.plugin.core.runner.Process
+    beforeCommands:
+      - pip install dbt-bigquery
+    commands:
+      - cd /app/dbt/pitwall_dbt && dbt run --profiles-dir /app/dbt
+
+  - id: dbt_test
+    type: io.kestra.plugin.scripts.shell.Commands
+    taskRunner:
+      type: io.kestra.plugin.core.runner.Process
+    commands:
+      - cd /app/dbt/pitwall_dbt && dbt test --profiles-dir /app/dbt
