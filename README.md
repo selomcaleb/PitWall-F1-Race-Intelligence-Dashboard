@@ -19,7 +19,45 @@ FastF1 API → Python ingestion → GCS (parquet) → BigQuery (raw)
 
 Kestra handles orchestration. Terraform manages the GCP infrastructure.
 
-![architecture](docs/architecture.png)
+```mermaid
+flowchart TB
+    subgraph src[" "]
+        A[FastF1 API]
+    end
+
+    subgraph ingest["Ingestion"]
+        B[Python scripts]
+    end
+
+    subgraph gcp["Google Cloud Platform"]
+        C[(Cloud Storage<br/>raw parquet)]
+        D[(BigQuery<br/>pitwall_raw)]
+        E[(BigQuery<br/>pitwall_mart)]
+    end
+
+    subgraph transform["dbt Core"]
+        F[Staging models<br/>typing · dedup]
+        G[Mart models<br/>standings · strategy · pace]
+    end
+
+    H[Looker Studio]
+    K[Kestra]
+    T[Terraform]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> F
+    F --> G
+    G --> E
+    E --> H
+
+    K -.orchestrates.-> B
+    K -.orchestrates.-> F
+    T -.provisions.-> C
+    T -.provisions.-> D
+    T -.provisions.-> E
+```
 
 ## Stack
 
