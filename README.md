@@ -108,7 +108,7 @@ least-privilege roles rather than granting Terraform IAM-management
 permissions.
 
 ## Project structure
-
+```
 PitWall-F1-Race-Intelligence-Dashboard/
 ├── ingestion/
 │   ├── ingest_session.py           # Core ingestion: one session → GCS + BigQuery
@@ -150,4 +150,4 @@ PitWall-F1-Race-Intelligence-Dashboard/
 ├── requirements.txt
 ├── .env.example
 └── README.md
-
+```
