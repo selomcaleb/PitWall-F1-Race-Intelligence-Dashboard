@@ -124,7 +124,7 @@ The Kestra flows pip install their dependencies on every run. It works but it's 
 
 ## Dashboard
 
-![dashboard](docs/dashboard_page1.png)
+![dashboard](https://github.com/selomcaleb/PitWall-F1-Race-Intelligence-Dashboard/blob/main/dashboard1.png)
 
 Four pages:
 
